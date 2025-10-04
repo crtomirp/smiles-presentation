@@ -1,0 +1,25 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12" id="slide-cubane-3" id="slide-13" data-audio="audio/slide13.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-6 animated-element">Generating SMILES: Cubane (3/4)</h1>
+  
+  <main class="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
+    <div class="animated-element" style="animation-delay: 0.2s;">
+      <img src="img/kuban3.png" alt="2D graph of Cubane with path annotations" class="bg-white rounded-lg p-2 shadow-md mx-auto">
+    </div>
+    
+    <div class="animated-element" style="animation-delay: 0.4s;">
+      <div class="icon-card !shadow-none bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-2xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">Step 2: Plan a Path & Ring Closures</h3>
+        <p class="text-lg text-left">
+          To write a linear string for a cage, we must mentally "break" rings. We use numbers to mark where these broken bonds must reconnect. A path must be chosen that visits every single atom.
+        </p>
+        <p class="text-lg text-left mt-4">
+          We can trace one face of the cube first, then use a branch to move to the second face. We will need multiple ring closure numbers since cubane is polycyclic (has many rings).
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-0 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> To convert this network into a line of text, we have to trace a path that visits every atom. For a cage structure like this, it requires us to mentally 'break' the rings to create a linear path. As we trace, we'll place numbered tags on the atoms where we made a break, so a computer knows how to reconnect them later to correctly form the cage.</p>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start p-0 ldx" id="slide-6" data-audio="audio/slide6.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-8 animated-element">Common Mistakes to Avoid</h1>
+  <main class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="figure animated-element" style="animation-delay: 0.1s;">
+      <h3 class="font-semibold text-lg mb-2">Aromatic vs. Aliphatic</h3>
+      <p>Using uppercase 'C' for benzene instead of lowercase 'c'.</p>
+      <p class="mt-2"><span class="chip badge-err">C1CCCCC1</span> vs <span class="chip badge-ok">c1ccccc1</span></p>
+    </div>
+    <div class="figure animated-element" style="animation-delay: 0.2s;">
+      <h3 class="font-semibold text-lg mb-2">Ring Closure Errors</h3>
+      <p>Forgetting to close a ring or using mismatched numbers.</p>
+      <p class="mt-2"><span class="chip badge-err">c1cccc</span> vs <span class="chip badge-ok">c1ccccc1</span></p>
+    </div>
+    <div class="figure animated-element" style="animation-delay: 0.3s;">
+      <h3 class="font-semibold text-lg mb-2">Misplaced Branches</h3>
+      <p>Placing parentheses incorrectly, breaking the main chain.</p>
+      <p class="mt-2"><span class="chip badge-err">C(C)CC</span> vs <span class="chip badge-ok">CC(C)C</span></p>
+    </div>
+    <div class="figure animated-element" style="animation-delay: 0.4s;">
+      <h3 class="font-semibold text-lg mb-2">Stereochemistry Omission</h3>
+      <p>Ignoring chiral centers when the information is critical.</p>
+      <p class="mt-2"><span class="chip badge-warn">C[C]H(O)C</span> vs <span class="chip badge-ok">C[C@H](O)C</span></p>
+    </div>
+  </main>
+  <div class="narration-panel w-full max-w-4xl bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> When writing SMILES, be careful of a few common pitfalls. Remember that aromatic atoms are lowercase, while aliphatic atoms are uppercase—this is a critical distinction. Ensure every ring you open with a number is eventually closed with the same number. Branches in parentheses must be placed directly after the atom they are attached to. Finally, while not always required, remember that stereochemistry can be specified to capture the full 3D nature of a molecule.</p>
+  </div>
+</div>

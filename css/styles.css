@@ -1,0 +1,118 @@
+:root {
+  /* Primary palette */
+  --primary-color: #4f46e5;        /* Indigo-600 */
+  --primary-color-light: #6366f1;  /* Indigo-500 */
+
+  /* Light theme tokens */
+  --bg-1: #f3f4f6;   /* Gray-100 */
+  --bg-2: #e5e7eb;   /* Gray-200 */
+  --card: #ffffff;
+  --text: #111827;   /* Gray-900 */
+}
+
+/* Toggle dark mode by adding .dark to <html> or <body> */
+.dark {
+  --bg-1: #111827;   /* Gray-900 */
+  --bg-2: #1f2937;   /* Gray-800 */
+  --card: #1f2937;
+  --text: #f9fafb;   /* Gray-50 */
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+/* Slides */
+.slide {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Main stage */
+.presentation-container {
+  width: 100%;
+  max-width: 1100px;
+  aspect-ratio: 16 / 9;
+  background: var(--card);
+  box-shadow: 0 20px 40px rgba(0,0,0,.1), 0 5px 15px rgba(0,0,0,.05);
+  transition: background-color .3s ease;
+}
+/* Fallback for very old browsers without aspect-ratio */
+@supports not (aspect-ratio: 1 / 1) {
+  .presentation-container { height: calc(100vw * 9 / 16); }
+}
+
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 4px;
+  background-color: var(--primary-color);
+  width: 0;
+  transition: width .3s ease-out;
+  z-index: 50;
+}
+
+/* Simple entrance animation */
+.animated-element {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp .5s ease-out forwards;
+}
+@keyframes fadeInUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hover cards */
+.icon-card { transition: transform .2s ease, box-shadow .2s ease; }
+.icon-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,.08); }
+
+/* Narration panel (collapsible) */
+.narration-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .5s ease-out, opacity .5s ease-out, margin-top .5s ease-out;
+  margin-top: 0;
+}
+.narration-visible .narration-panel {
+  max-height: 60vh;   /* was 200px; handle longer text */
+  opacity: 1;
+  margin-top: 1rem;
+}
+
+/* Audio progress bar driven by CSS var --progress (0%–100%) */
+#audio-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary-color) var(--progress, 0%), #e5e7eb 0);
+}
+
+
+/* Move slide title closer to the top */
+.presentation-container h1,
+.presentation-container .slide-title,
+.presentation-container .title {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}

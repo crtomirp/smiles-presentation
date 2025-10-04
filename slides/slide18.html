@@ -1,0 +1,39 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start p-0 animated-element" id="slide-18" data-audio="audio/slide18.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-4 text-center">SMILES Reconstruction Practice</h1>
+  <p class="text-lg text-center text-gray-700 dark:text-gray-300 mb-8 max-w-3xl">
+    For each card, use a pencil and paper to draw the 2D structure from the SMILES string. Click the card to flip it over and check your answer. ✍️
+  </p>
+  <main class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="flip-card w-full cursor-pointer animated-element" style="animation-delay: 0.2s;" id="card1">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <h3 class="text-xl font-semibold mb-4">Melatonin</h3>
+          <p class="text-center text-sm mb-4">Reconstruct this molecule:</p>
+          <code class="text-sm  text-white font-mono bg-gray-200 dark:bg-gray-800 p-2 rounded-md break-all">CC(=O)NCCC1=CNC2=C1C=C(C=C2)OC</code>
+          <p class="mt-6 text-xs text-indigo-500">Click to reveal structure</p>
+        </div>
+        <div class="flip-card-back">
+           <h3 class="text-xl font-semibold mb-4">Melatonin Structure</h3>
+           <img src="img/melatonin.png" alt="Melatonin" class="max-h-48 mx-auto">
+        </div>
+      </div>
+    </div>
+    <div class="flip-card w-full cursor-pointer animated-element" style="animation-delay: 0.4s;" id="card2">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <h3 class="text-xl font-semibold mb-4">Atorvastatin</h3>
+          <p class="text-center text-sm mb-4">Reconstruct this molecule:</p>
+          <code class="text-sm text-white font-mono bg-gray-200 dark:bg-gray-800 p-2 rounded-md break-all">CC(C)C1=C(C(=C(N1)C2=CC=C(C=C2)F)C3=CC=CC=C3)C(=O)NC4=CC=CC=C4</code>
+           <p class="mt-6 text-xs text-indigo-500">Click to reveal structure</p>
+        </div>
+        <div class="flip-card-back">
+           <h3 class="text-2xl font-semibold mb-4">Atorvastatin Structure</h3>
+           <img src="img/atrovastatin.png" alt="Atorvastatin" class="max-h-52 mx-auto">
+        </div>
+      </div>
+    </div>
+  </main>
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-0 rounded-lg text-sm text-left mt-8">
+    <p><strong>Narration:</strong> Now for a hands-on challenge. On the screen are two molecules represented by their SMILES strings. Take a moment to draw the structure for each one on paper. When you're ready, click a card to flip it and see the correct structure.</p>
+  </div>
+</div>

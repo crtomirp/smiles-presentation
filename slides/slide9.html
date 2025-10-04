@@ -1,0 +1,24 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12" id="slide-9" data-audio="audio/slide9.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-6 animated-element">Generating SMILES: Ciprofloxacin (3/3)</h1>
+
+  <main class="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
+    <div class="animated-element" style="animation-delay: 0.2s;">
+      <img src="img/ciprofloxacin-2.png" alt="Ciprofloxacin structure with numbered atoms" class="bg-white rounded-lg p-2 shadow-md mx-auto">
+    </div>
+
+    <div class="animated-element" style="animation-delay: 0.4s;">
+      <div class="icon-card !shadow-none bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-2xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">Step 3: Complete the Path</h3>
+        <p class="text-lg text-left">
+        We continue tracing through the ring system, adding the fluorine atom <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded-sm">(F)</code>, the piperazine group <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded-sm">(N4CCNCC4)</code>, etc. in parentheses as branches. The final path connects all atoms and closes all rings. Note that many valid SMILES strings can exist for a given molecule.
+        </p>
+        <p class="text-lg font-semibold mt-3">Final NON-Canonical SMILES:</p>
+        <code class="mt-1 text-md font-mono bg-gray-900 text-white px-3 py-2 rounded-md break-all w-full block text-left">OC(=O)C1=CN(C3CC3)C2=CC(N4CCNCC4)=C(F)C=C2C1=O</code>
+      </div>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> Finally, we finish tracing our path through the second ring, adding the remaining branches like the fluorine atom and the large piperazine ring in parentheses. Once every atom is accounted for and all rings are closed, the string is complete. This process yields one of many possible non-canonical SMILES. A computer algorithm would perform a much more complex analysis to generate the single, standardized canonical version for database use.</p>
+  </div>
+</div>

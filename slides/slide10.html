@@ -1,0 +1,32 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12" id="slide-10" data-audio="audio/slide10.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-4 animated-element">Practice Examples</h1>
+  
+  <p class="text-lg text-center text-gray-700 dark:text-gray-300 mb-8 animated-element" style="animation-delay: 0.2s;">
+    Try to write the SMILES code for each molecule using only paper and pencil. Then, click the button to reveal the answer and compare. ✍️
+  </p>
+  
+  <main class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <div class="icon-card text-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex flex-col items-center animated-element" style="animation-delay: 0.4s;">
+      <h3 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Aspirin</h3>
+      <img src="img/aspirin.png" alt="Aspirin" class="h-32 mx-auto mb-4">
+      <button id="aspirin-toggle-btn" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        Show SMILES
+      </button>
+      <code id="aspirin-smiles" class="hidden mt-4 text-md font-mono bg-gray-900 text-white px-3 py-2 rounded-md break-all">CC(=O)OC1=CC=CC=C1C(=O)O</code>
+    </div>
+    
+    <div class="icon-card text-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex flex-col items-center animated-element" style="animation-delay: 0.5s;">
+      <h3 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Caffeine</h3>
+      <img src="img/caffeine.png" alt="Caffeine" class="h-32 mx-auto mb-4">
+      <button id="caffeine-toggle-btn" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        Show SMILES
+      </button>
+      <code id="caffeine-smiles" class="hidden mt-4 text-md font-mono bg-gray-900 text-white px-3 py-2 rounded-md break-all">CN1C=NC2=C1C(=O)N(C(=O)N2C)C</code>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-0 rounded-lg text-sm text-left mt-8">
+    <p><strong>Narration:</strong> Now it's your turn to practice. On this slide are two common molecules: Aspirin and Caffeine. Take a moment to trace their structures and write down what you think their SMILES strings should be. Remember to account for double bonds, rings, and branches. When you're ready, click the 'Show SMILES' button to reveal a correct version and compare it with your own. Don't worry if it's not identical—remember, there are many valid non-canonical strings.</p>
+  </div>
+</div>

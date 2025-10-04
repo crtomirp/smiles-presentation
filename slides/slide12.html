@@ -1,0 +1,25 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12" id="slide-12" data-audio="audio/slide12.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-6 animated-element">Generating SMILES: Cubane (2/4)</h1>
+  
+  <main class="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
+    <div class="animated-element" style="animation-delay: 0.2s;">
+      <img src="img/kuban2.png" alt="2D topological graph of Cubane" class="bg-white rounded-lg p-2 shadow-md mx-auto">
+    </div>
+    
+    <div class="animated-element" style="animation-delay: 0.4s;">
+      <div class="icon-card !shadow-none bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-2xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">Step 1: Focus on Connections</h3>
+        <p class="text-lg text-left">
+          First, we ignore the 3D geometry and focus only on the <strong>topology</strong>—which atoms are connected to which. We can represent the molecule as a "flattened" 2D network graph.
+        </p>
+        <p class="text-lg text-left mt-4">
+          This view makes it easier to plan a path that visits every atom, which is the key to writing a linear SMILES string. In cubane, every carbon is connected to three others.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> The first step is to simplify our perspective. Instead of thinking about the molecule in 3D, we'll look at it as a flat, two-dimensional graph. This topological view shows us only the essential information needed for SMILES: the atoms and their bonds. This makes it much easier to plan a path that visits every single atom.</p>
+  </div>
+</div>

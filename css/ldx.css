@@ -1,0 +1,15 @@
+
+/* LDX extras: visuals, chips, kpis, flow, figures */
+.ldx .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ldx .kpi{border:1px solid #d4dbe7;border-radius:14px;padding:16px;background:#fff;box-shadow:0 8px 22px rgba(2,6,23,.06)}
+.ldx .kpi h4{font-weight:800;margin-bottom:6px}
+.ldx .flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:stretch}
+.ldx .flow .step{border:1px solid #d4dbe7;background:#f7f9fc;border-radius:12px;padding:12px;position:relative}
+.ldx .flow .arrow::after{content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-weight:800;color:#0b57d0}
+.ldx .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid #d4dbe7;background:#eef4ff;color:#0a2e8a;font-weight:700;font-size:.8rem}
+.ldx .figure{border:1px dashed #c8d2e6;background:#f9fbff;padding:14px;border-radius:12px;font-size:.9rem;color:#2f3b4a}
+.ldx .table-note{font-size:.85rem;color:#2f3b4a;margin-top:.4rem}
+.badge-ok{background:#eef9f1;color:#146c2e;border:1px solid #bde5c7}
+.badge-warn{background:#fff7e6;color:#a15c00;border:1px solid #ffdead}
+.badge-err{background:#ffedf0;color:#b00020;border:1px solid #ffc2cc}
+@media (max-width:900px){.ldx .flow{grid-template-columns:1fr}.ldx .flow .arrow::after{display:none}.ldx .kpis{grid-template-columns:1fr}}

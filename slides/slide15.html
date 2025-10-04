@@ -1,0 +1,30 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12" id="slide-15" data-audio="audio/slide15.mp3">
+  <h1 class="slide-title text-3xl md-text-4xl font-bold mb-6 animated-element">Specifying Double Bond Geometry (E/Z)</h1>
+  
+  <main class="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
+    <div class="animated-element" style="animation-delay: 0.2s;">
+      <img src="img/stilbenes.png" alt="(E)-stilbene and (Z)-stilbene" class="bg-white rounded-lg p-2 shadow-md mx-auto">
+        <p class="text-lg font-semibold mt-3">(E)-stilbene SMILES:</p>
+        <code class="mt-1 text-md font-mono bg-gray-900 text-white px-3 py-2 rounded-md break-all w-full block text-left">c1ccc(cc1)/C=C/c2ccccc2</code>
+        <p class="text-lg font-semibold mt-3">(Z)-stilbene SMILES:</p>
+        <code class="mt-1 text-md font-mono bg-gray-900 text-white px-3 py-2 rounded-md break-all w-full block text-left">c1ccc(cc1)/C=C\c2ccccc2</code>
+    </div>
+
+    <div class="animated-element" style="animation-delay: 0.4s;">
+      <div class="icon-card !shadow-none bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-2xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">Directional Bonds: "/" and "\"</h3>
+        <p class="text-lg text-left">
+          To specify the geometry of substituents around a double bond, SMILES uses the "/" and "\" characters to indicate "up" and "down" directionality, respectively.
+        </p>
+        <p class="text-lg text-left mt-4">
+          When these directional bonds are on the <strong>same side</strong> of the double bond (e.g., both up or both down), it indicates a <em>trans</em> or (E) configuration. When they are on <strong>opposite sides</strong>, it indicates a <em>cis</em> or (Z) configuration.
+        </p>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-0 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> Let's add three-dimensional information to our strings. We can specify the cis/trans configuration of double bonds using forward and backward slashes. For (E)-stilbene, or trans-stilbene, notice how the slashes around the double bond are both forward slashes, indicating the phenyl groups are on opposite sides. For (Z)-stilbene, or cis-stilbene, we use one forward slash and one backward slash to show the groups are on the same side. This simple addition precisely defines the molecule's 3D shape.</p>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12"  id="slide-14" data-audio="audio/slide14.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-6 animated-element">Generating SMILES: Cubane (4/4)</h1>
+  
+  <main class="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
+    <div class="animated-element" style="animation-delay: 0.2s;">
+       <img src="img/kuban4.png" alt="2D graph of Cubane with final path" class="bg-white rounded-lg p-2 shadow-md mx-auto">
+    </div>
+
+    <div class="animated-element" style="animation-delay: 0.4s;">
+      <div class="icon-card !shadow-none bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-2xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">Step 3: Trace and Compose the String</h3>
+        <p class="text-lg text-left">
+        Following our path, we build the string. We start at one atom, assigning it two ring closure numbers, <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded-sm">1</code> and <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded-sm">2</code>. As we trace, we add more numbers for the other connections needed to form the cube. The final atom in the path will close multiple rings at once.
+        </p>
+        <p class="text-lg font-semibold mt-3">Final SMILES:</p>
+        <code class="mt-1 text-md font-mono bg-gray-900 text-white px-3 py-2 rounded-md break-all w-full block text-left">C12C3C4C1C5C4C3C25</code>
+      </div>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-0 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> Finally, we write the string by following our chosen path. Each 'C' represents a carbon atom. The numbers that immediately follow a carbon, like in C12, are the tags telling us where this atom will form ring-closing bonds later in the string. By the time we reach the end, all the tags have found their matching pairs, and the cubic structure is fully and accurately described.</p>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12" id="slide-3" data-audio="audio/slide3.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-4 animated-element">SMILES Building Blocks</h1>
+  
+  <p class="w-full max-w-5xl text-center text-lg text-gray-600 dark:text-gray-300 mb-8 animated-element" style="animation-delay: 0.1s;">
+    A SMILES string is a line notation that unambiguously describes a molecule's structure using a small set of simple rules and characters. Below are the fundamental components you will use to write any molecule.
+  </p>
+
+  <main class="w-full max-w-5xl grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+    <div class="icon-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md animated-element" style="animation-delay: 0.2s;">
+      <h3 class="text-xl font-semibold mb-2">Atoms</h3>
+      <p class="font-mono text-lg">C, N, O, S, P, F, Cl, Br, I</p>
+    </div>
+    <div class="icon-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md animated-element" style="animation-delay: 0.3s;">
+      <h3 class="text-xl font-semibold mb-2">Bonds</h3>
+      <p class="font-mono text-2xl flex justify-center gap-3">
+        <span>-</span><span>=</span><span>#</span><span>:</span>
+      </p>
+    </div>
+    <div class="icon-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md animated-element" style="animation-delay: 0.4s;">
+      <h3 class="text-xl font-semibold mb-2">Branches</h3>
+      <p class="font-mono text-3xl">( )</p>
+    </div>
+    <div class="icon-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md animated-element" style="animation-delay: 0.5s;">
+      <h3 class="text-xl font-semibold mb-2">Rings</h3>
+      <p class="font-mono text-lg">1, 2, ... 9, %10, %11...</p>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> The power of SMILES comes from its simplicity. It uses just four types of building blocks. Atoms are written using their element symbols. Bonds are shown with characters for double, triple, and aromatic, but the single bond is usually omitted to keep the string short. Any group of atoms that branches off the main chain is enclosed in parentheses. Finally, rings are indicated by placing a matching number on the two atoms that need to be connected to form the ring.</p>
+  </div>
+</div>

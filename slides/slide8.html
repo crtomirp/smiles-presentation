@@ -1,0 +1,21 @@
+<div class="slide w-full h-full flex flex-col items-center justify-start px-12 pt-0 pb-12" id="slide-8" data-audio="audio/slide8.mp3">
+  <h1 class="slide-title text-3xl md:text-4xl font-bold mb-6 animated-element">Generating SMILES: Ciprofloxacin (2/3)</h1>
+
+  <main class="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
+    <div class="animated-element" style="animation-delay: 0.2s;">
+      <img src="img/ciprofloxacin-1.png" alt="Ciprofloxacin structure with numbered atoms" class="bg-white rounded-lg p-2 shadow-md mx-auto">
+    </div>
+    
+    <div class="animated-element" style="animation-delay: 0.4s;">
+      <div class="icon-card !shadow-none bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+        <h3 class="text-2xl font-semibold mb-3 text-indigo-600 dark:text-indigo-400">Step 2: Add Branches</h3>
+        <p class="text-lg text-left">As we trace the path, we add branches inside parentheses <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded-sm">()</code>. The nitrogen atom has a cyclopropyl group branch, which we write as a ring: <code class="bg-gray-200 dark:bg-gray-700 p-1 rounded-sm">C3CC3</code>. We set parentheses right after the nitrogen atom. We do similarly also for other branches in the molecule.</p>
+        <code class="mt-4 text-md font-mono bg-gray-900 text-white px-3 py-2 rounded-md break-all w-full block text-left">OC(--)C1=CN(--)C2=CC(--)=C(--)C=C2C1=O</code>
+      </div>
+    </div>
+  </main>
+
+  <div class="narration-panel w-full max-w-5xl bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm text-left mt-6">
+    <p><strong>Narration:</strong> Continuing along our path, we handle any atoms or groups that are not part of the main ring system. These are treated as branches. For instance, the nitrogen atom in the core is attached to a cyclopropyl group. We write the SMILES for this small ring, which is 'C-3-C-C-3', and place it entirely within parentheses immediately after the nitrogen atom it's bonded to. We use a new, unique number, '3', for this new ring system.</p>
+  </div>
+</div>
