@@ -1,5 +1,3 @@
-// Click-to-flip a card (needs your flipcard.css)
-// Usage: { use:"flipCard", target:"#card1" }
 window.SLIDE_PLUGINS.flipCard = function (root, opts) {
   const card = root.querySelector(opts.target) || document.querySelector(opts.target);
   if (!card) return () => {};
