@@ -1,69 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest identifier="com.example.scorm.ranking.module" version="1.2"
+<manifest identifier="MANIFEST-smiles-presentation" version="1.2"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
   xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd
-                      http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
-  <organizations default="ORG1">
-    <organization identifier="ORG1">
-      <title>Data Curation — Visual Slide Deck</title>
-      <item identifier="ITEM1" identifierref="RES1" isvisible="true">
-        <title>Launch Module</title>
+  xsi:schemaLocation="
+    http://www.imsproject.org/xsd/imscp_rootv1p1p2 ims_xml.xsd
+    http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+
+  <organizations default="ORG-1">
+    <organization identifier="ORG-1" structure="hierarchical">
+      <title>Introduction to SMILES</title>
+      <item identifier="ITEM-1" identifierref="RES-SCO-1" isvisible="true">
+        <title>SMILES Presentation</title>
+        <!-- LMS pass threshold in percent -->
+        <adlcp:masteryscore>70</adlcp:masteryscore>
       </item>
     </organization>
   </organizations>
+
   <resources>
-    <resource identifier="RES1" type="webcontent" adlcp:scormType="sco" href="index.html">
+    <resource identifier="RES-SCO-1" type="webcontent" adlcp:scormtype="sco" href="index.html">
       <file href="index.html"/>
       <file href="scorm.js"/>
       <file href="js/config.js"/>
       <file href="js/driver.js"/>
+
+      <!-- plugin infra -->
+      <file href="js/modules/eventBus.js"/>
+      <file href="js/modules/registry.js"/>
+      <file href="js/modules/buttonToggle.js"/>
+      <file href="js/modules/flipCard.js"/>
+      <file href="js/modules/quizChoice.js"/>
+      <file href="js/modules/bridge.scorm12.js"/>
+
       <file href="css/styles.css"/>
       <file href="css/ldx.css"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-      <file href="audio/slide-1.mp3"/>
-      <file href="audio/slide-10.mp3"/>
-      <file href="audio/slide-11.mp3"/>
-      <file href="audio/slide-12.mp3"/>
-      <file href="audio/slide-13.mp3"/>
-      <file href="audio/slide-14.mp3"/>
-      <file href="audio/slide-2.mp3"/>
-      <file href="audio/slide-3.mp3"/>
-      <file href="audio/slide-4.mp3"/>
-      <file href="audio/slide-5.mp3"/>
-      <file href="audio/slide-6.mp3"/>
-      <file href="audio/slide-7.mp3"/>
-      <file href="audio/slide-8.mp3"/>
-      <file href="audio/slide-9.mp3"/>
-    
-      <file href="slides/slide1.html"/>
-      <file href="slides/slide2.html"/>
-      <file href="slides/slide3.html"/>
-      <file href="slides/slide4.html"/>
-      <file href="slides/slide5.html"/>
-      <file href="slides/slide6.html"/>
-      <file href="slides/slide7.html"/>
-      <file href="slides/slide8.html"/>
-      <file href="slides/slide9.html"/>
-      <file href="slides/slide10.html"/>
-      <file href="slides/slide11.html"/>
-      <file href="slides/slide12.html"/>
-      <file href="slides/slide13.html"/>
-      <file href="slides/slide14.html"/>
-      <file href="slides/slide15.html"/>
+      <file href="css/flipcard.css"/>
+      <file href="css/quiz.css"/>
     </resource>
   </resources>
 </manifest>

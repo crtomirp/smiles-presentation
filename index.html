@@ -51,13 +51,19 @@
 
 <script src="js/config.js"></script>
 
-<!-- plugin registry + plugins -->
+<!-- infra -->
+<script src="js/modules/eventBus.js"></script>
 <script src="js/modules/registry.js"></script>
+
+<!-- slide plugins -->
 <script src="js/modules/buttonToggle.js"></script>
 <script src="js/modules/flipCard.js"></script>
 <script src="js/modules/quizChoice.js"></script>
 
-<!-- driver last -->
+<!-- SCORM bridge (optional via config.scorm.enabled) -->
+<script src="js/modules/bridge.scorm12.js"></script>
+
+<!-- generic driver (no LMS code inside) -->
 <script src="js/driver.js"></script>
 
 
