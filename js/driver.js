@@ -1,360 +1,300 @@
-// ---------- SCORM init ----------
-window.addEventListener('load', () => {
-  try {
-    scorm.init();
-    if (scorm.get("cmi.core.lesson_status") === "not attempted") {
-      scorm.set("cmi.core.lesson_status", "incomplete");
-      scorm.save();
-    }
-  } catch (e) { console.warn('SCORM init warning:', e); }
-});
-window.addEventListener('beforeunload', () => { try { scorm.quit(); } catch(e){} });
+/* driver.js — UI-aligned + plugin system + audio/auto + narration */
 
-// ---------- App State & Constants ----------
-const TOTAL_SLIDES = 22;
-const AUTO_ADVANCE_DELAY_MS = 3500;
-let currentSlide = 0;
+/* ---------- SCORM (safe) ---------- */
+window.addEventListener("load", () => {
+  try {
+    if (typeof scorm !== "undefined" && scorm && typeof scorm.init === "function") {
+      scorm.init();
+      if (scorm.get("cmi.core.lesson_status") === "not attempted") {
+        scorm.set("cmi.core.lesson_status", "incomplete");
+        scorm.save && scorm.save();
+      }
+    }
+  } catch (e) { console.warn("SCORM init warning:", e); }
+});
+window.addEventListener("beforeunload", () => { try { scorm.quit(); } catch (e) {} });
+
+/* ---------- DOM refs (match your index.html) ---------- */
+const slideArea   = document.getElementById("slide-content-area");
+const stage       = document.getElementById("presentation-container");
+const progressBar = document.getElementById("progress-bar");
+const prevBtn     = document.getElementById("prevBtn");
+const nextBtn     = document.getElementById("nextBtn");
+const autoBtn     = document.getElementById("auto-toggle");
+const counterEl   = document.getElementById("slide-counter");
+const themeBtn    = document.getElementById("theme-toggle");
+const themeIconLight = document.getElementById("theme-icon-light");
+const themeIconDark  = document.getElementById("theme-icon-dark");
+const narrBtn     = document.getElementById("narration-toggle");
+const audioBtn    = document.getElementById("audio-toggle");
+const audioEl     = document.getElementById("narration-audio");
+const playIcon    = document.getElementById("audio-play-icon");
+const stopIcon    = document.getElementById("audio-stop-icon");
+
+/* ---------- Config & State ---------- */
+const CFG    = window.PRESENTATION_CONFIG || {};
+let   SLIDES = Array.isArray(CFG.slides) ? CFG.slides : [];
+const OPT    = Object.assign({
+  autoplayAudio: false,
+  advanceOnAudioEnd: false,
+  autoAdvanceDelayMs: 3500,
+  rememberProgress: true
+}, CFG.options || {});
+
+const STORAGE_KEY = "smiles_presentation_progress";
+const THEME_KEY   = "smiles_theme";
+
+const TOTAL = SLIDES.length || 22;
+let current = 0;
 let autoMode = false;
 let autoTimer = null;
-let utterance = null; // For TTS fallback
-let quizState = {}; // State management for the quiz
+let utterance = null;                     // TTS fallback
+let activePluginCleanups = [];            // per-slide plugin unbinders
 
-// ---------- DOM refs ----------
-const slideContentArea = document.getElementById('slide-content-area');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const slideCounter = document.getElementById('slide-counter');
-const progressBar = document.getElementById('progress-bar');
-const themeToggle = document.getElementById('theme-toggle');
-const narrationToggle = document.getElementById('narration-toggle');
-const presentationContainer = document.getElementById('presentation-container');
-const audioToggle = document.getElementById('audio-toggle');
-const audioEl = document.getElementById('narration-audio');
-const autoToggle = document.getElementById('auto-toggle');
-
-// ---------- Core Logic ----------
-async function showSlide(index) {
-  stopAllAudio();
-  autoTimer && clearTimeout(autoTimer);
-
+// quiz score aggregator (used by quiz plugin)
+const QUIZ_SLIDES = SLIDES
+  .map((s, i) => ({ i, hooks: s.hooks || [] }))
+  .filter(s => s.hooks.some(h => h.use === "quiz"))
+  .map(s => s.i);
+const quizScores = new Map();             // slideIndex -> 0/1
+window._updateTotalQuizScore = function (slideIndex, score) {
+  quizScores.set(slideIndex, score ? 1 : 0);
   try {
-    const response = await fetch(`slides/slide${index + 1}.html`, {cache: "no-cache"});
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    slideContentArea.innerHTML = await response.text();
-    const slideDiv = slideContentArea.firstElementChild;
-    if (slideDiv) {
-        slideDiv.classList.add('slide', 'active');
-        const animatedElements = slideDiv.querySelectorAll('.animated-element');
-        animatedElements.forEach(el => {
-            el.style.animation = 'none';
-            void el.offsetWidth;
-            el.style.animation = '';
-        });
+    const total = Array.from(quizScores.values()).reduce((a, b) => a + b, 0);
+    const max = QUIZ_SLIDES.length || 0;
+    if (typeof scorm !== "undefined" && scorm) {
+      scorm.set("cmi.core.score.raw", total);
+      scorm.set("cmi.core.score.min", 0);
+      scorm.set("cmi.core.score.max", max);
+      scorm.save && scorm.save();
     }
-  } catch (error) {
-    slideContentArea.innerHTML = `<div class="text-center text-red-500"><p><strong>Error Loading Slide</strong></p><p>${error.message}</p></div>`;
-    console.error("Failed to fetch slide:", error);
-    return;
-  }
+  } catch (e) { /* ignore */ }
+};
 
-  // After loading, check for interactive slides
-  setTimeout(() => {
-    if (index === 6) { // Slide 7
-      setupToggleButton('aspirin-toggle-btn', 'aspirin-smiles');
-      setupToggleButton('caffeine-toggle-btn', 'caffeine-smiles');
-    }
-    if (index === 17) { // Slide 18
-      setupFlipCard('card1');
-      setupFlipCard('card2');
-    }
-	if (index === 18 || index === 19) { // Slides 19 & 20
-      setupQuizSlide(index);
-    }
-  }, 100);
-  
-  currentSlide = index;
-  updateUI();
-  
-  if (currentSlide === TOTAL_SLIDES - 1) {
-    try {
-      if (scorm.get("cmi.core.lesson_status") !== "completed") {
-        scorm.set("cmi.core.lesson_status", "completed");
-        scorm.save();
-      }
-    } catch(e) { console.warn('SCORM completion set failed', e); }
-  }
-  
-  preloadAudioForSlide(currentSlide + 1);
-
-  if (autoMode) {
-    runAutoFromCurrent();
-  }
-}
+/* ---------- Helpers ---------- */
+const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+const htmlFor = (i) => SLIDES[i]?.html  || `slides/slide${i + 1}.html`;
+const audioFor= (i) => SLIDES[i]?.audio || `audio/slide${i + 1}.mp3`;
 
 function updateUI() {
-  slideCounter.textContent = `Slide ${currentSlide + 1} / ${TOTAL_SLIDES}`;
-  prevBtn.disabled = currentSlide === 0;
-  nextBtn.disabled = currentSlide === TOTAL_SLIDES - 1;
-  progressBar.style.width = `${((currentSlide + 1) / TOTAL_SLIDES) * 100}%`;
-  const themeIconLight = document.getElementById('theme-icon-light');
-  const themeIconDark = document.getElementById('theme-icon-dark');
-  if (document.documentElement.classList.contains('dark')) {
-      themeIconLight.classList.add('hidden');
-      themeIconDark.classList.remove('hidden');
-  } else {
-      themeIconLight.classList.remove('hidden');
-      themeIconDark.classList.add('hidden');
-  }
+  const n = current + 1;
+  counterEl && (counterEl.textContent = `Slide ${n} / ${TOTAL}`);
+  prevBtn && (prevBtn.disabled = current <= 0);
+  nextBtn && (nextBtn.disabled = current >= TOTAL - 1);
+  if (progressBar) progressBar.style.width = `${(n / TOTAL) * 100}%`;
+  const isDark = document.documentElement.classList.contains("dark");
+  themeIconLight?.classList.toggle("hidden", isDark);
+  themeIconDark?.classList.toggle("hidden", !isDark);
 }
 
-// ---------- Audio & Auto-play ----------
+function saveProgress() {
+  try {
+    OPT.rememberProgress && localStorage.setItem(STORAGE_KEY, String(current));
+    if (typeof scorm !== "undefined" && scorm) {
+      scorm.set("cmi.core.lesson_location", String(current));
+      scorm.save && scorm.save();
+    }
+  } catch (e) {}
+}
+function restoreProgress() {
+  let idx = 0;
+  try {
+    if (OPT.rememberProgress) {
+      const s = localStorage.getItem(STORAGE_KEY);
+      if (s !== null) idx = clamp(parseInt(s, 10) || 0, 0, TOTAL - 1);
+    }
+    if (typeof scorm !== "undefined" && scorm) {
+      const loc = scorm.get("cmi.core.lesson_location");
+      if (loc && !isNaN(Number(loc))) idx = clamp(parseInt(loc, 10) || 0, 0, TOTAL - 1);
+    }
+  } catch (e) {}
+  return idx;
+}
+
 function stopAllAudio() {
-    if (utterance) {
-        speechSynthesis.cancel();
-        utterance = null;
+  try {
+    if (audioEl) {
+      audioEl.pause(); audioEl.currentTime = 0;
+      audioEl.removeAttribute("src"); audioEl.load();
     }
-    audioEl.pause();
-    audioEl.currentTime = 0;
-    setAudioIcon(false);
+  } catch (e) {}
+  if (utterance && window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) {} utterance = null; }
+  playIcon?.classList.remove("hidden"); stopIcon?.classList.add("hidden");
 }
 
-function setAudioIcon(speaking) {
-    document.getElementById('audio-play-icon').classList.toggle('hidden', speaking);
-    document.getElementById('audio-stop-icon').classList.toggle('hidden', !speaking);
+function ttsFromSlide(slideRoot, onEnd) {
+  const narr = slideRoot?.querySelector(".narration-panel");
+  const text = narr ? narr.textContent.trim() : "";
+  if (!text) { onEnd && onEnd(); return; }
+  try {
+    utterance = new SpeechSynthesisUtterance(text);
+    utterance.onstart = () => { playIcon?.classList.add("hidden"); stopIcon?.classList.remove("hidden"); };
+    utterance.onend   = () => { playIcon?.classList.remove("hidden"); stopIcon?.classList.add("hidden"); utterance = null; onEnd && onEnd(); };
+    speechSynthesis.speak(utterance);
+  } catch (e) { onEnd && onEnd(); }
 }
 
-function playNarrationOnce() {
-    if (audioEl.paused && !utterance) {
-        const currentSlideEl = document.querySelector('.slide.active');
-        if (!currentSlideEl) return;
-        const audioFile = currentSlideEl.dataset.audio;
-        if (audioFile) {
-            audioEl.src = audioFile;
-            audioEl.play().catch(e => {
-                console.warn("Audio playback failed, trying TTS fallback.", e);
-                playTTSFallback(() => {});
-            });
-            setAudioIcon(true);
-            audioEl.onended = () => setAudioIcon(false);
-        } else {
-            playTTSFallback(() => {});
-        }
+function activateRoot(el) {
+  if (!el) return;
+  if (!el.classList.contains("slide")) el.classList.add("slide");
+  el.classList.add("active");
+  el.classList.remove("hidden", "invisible", "opacity-0");
+  if (el.hasAttribute("hidden")) el.removeAttribute("hidden");
+  if (getComputedStyle(el).display === "none") el.style.display = "flex";
+  el.querySelectorAll(".animated-element").forEach(node => { node.style.animation = "none"; void node.offsetWidth; node.style.animation = ""; });
+}
+
+function setAudioIcon(on) { playIcon?.classList.toggle("hidden", on); stopIcon?.classList.toggle("hidden", !on); }
+function updateAutoButton() { autoBtn.classList.toggle("bg-indigo-600", autoMode); autoBtn.classList.toggle("text-white", autoMode); }
+function preloadAudio(i) { if (i < TOTAL) { const link = document.createElement("link"); link.rel = "preload"; link.as = "audio"; link.href = audioFor(i); document.head.appendChild(link); } }
+
+/* ---------- Plugin runner ---------- */
+function runSlidePlugins(slideIndex, root) {
+  // cleanup previous
+  for (const fn of activePluginCleanups) try { fn(); } catch {}
+  activePluginCleanups = [];
+
+  const hooks = SLIDES[slideIndex]?.hooks || [];
+  if (!hooks.length) return;
+
+  const REG = window.SLIDE_PLUGINS || {};
+  hooks.forEach(h => {
+    const plug = REG[h.use];
+    if (typeof plug === "function") {
+      try {
+        const cleanup = plug(root, Object.assign({ slideIndex }, h));
+        if (typeof cleanup === "function") activePluginCleanups.push(cleanup);
+      } catch (e) {
+        console.warn(`Plugin "${h.use}" failed on slide ${slideIndex + 1}:`, e);
+      }
     } else {
-        stopAllAudio();
+      console.warn(`Unknown plugin "${h.use}" on slide ${slideIndex + 1}`);
     }
-}
-
-function playTTSFallback(onFinishCallback) {
-    const currentSlideEl = document.querySelector('.slide.active');
-    const narrationPanel = currentSlideEl ? currentSlideEl.querySelector('.narration-panel') : null;
-    if (narrationPanel && 'speechSynthesis' in window) {
-        stopAllAudio();
-        const text = narrationPanel.innerText || narrationPanel.textContent;
-        utterance = new SpeechSynthesisUtterance(text);
-        utterance.onstart = () => setAudioIcon(true);
-        utterance.onend = () => {
-            setAudioIcon(false);
-            utterance = null;
-            if (onFinishCallback) onFinishCallback();
-        };
-        speechSynthesis.speak(utterance);
-    } else if (onFinishCallback) {
-        onFinishCallback();
-    }
-}
-
-function runAutoFromCurrent() {
-    if (!autoMode) return;
-    const onFinish = () => {
-        if (autoMode && currentSlide < TOTAL_SLIDES - 1) {
-            autoTimer = setTimeout(() => showSlide(currentSlide + 1), AUTO_ADVANCE_DELAY_MS);
-        } else {
-            autoMode = false;
-            updateAutoButton();
-        }
-    };
-
-    const currentSlideEl = document.querySelector('.slide.active');
-    const audioFile = currentSlideEl ? currentSlideEl.dataset.audio : null;
-
-    if (audioFile) {
-        audioEl.src = audioFile;
-        audioEl.play().catch(() => playTTSFallback(onFinish));
-        setAudioIcon(true);
-        audioEl.onended = () => {
-            setAudioIcon(false);
-            onFinish();
-        };
-    } else {
-        playTTSFallback(onFinish);
-    }
-}
-
-function updateAutoButton() {
-    autoToggle.classList.toggle('bg-indigo-600', autoMode);
-    autoToggle.classList.toggle('text-white', autoMode);
-}
-
-function preloadAudioForSlide(slideIndex) {
-    if (slideIndex >= TOTAL_SLIDES) return;
-    // This is a simplified preloader. A real implementation might be more complex.
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'audio';
-    link.href = `audio/slide${slideIndex + 1}.mp3`;
-    document.head.appendChild(link);
-}
-
-
-// ---------- Interactive Slide Helpers ----------
-function setupToggleButton(buttonId, codeId) { 
-    const btn = document.getElementById(buttonId);
-    const code = document.getElementById(codeId);
-    if (btn && code) {
-        btn.addEventListener('click', () => {
-            const isHidden = code.classList.toggle('hidden');
-            btn.textContent = isHidden ? 'Show SMILES' : 'Hide SMILES';
-        });
-    }
-}
-function setupFlipCard(cardId) {
-    const card = document.getElementById(cardId);
-    if (!card) return;
-    const handleFlip = () => card.classList.toggle('is-flipped');
-    if (!card.dataset.listenerAttached) {
-        card.addEventListener('click', handleFlip);
-        card.dataset.listenerAttached = 'true';
-    }
-}
-
-// =================================================================
-// QUIZ LOGIC (full implementation)
-// =================================================================
-function initializeQuiz() {
-  quizState[18] = { attempts: 2, answered: false, score: 0 };
-  quizState[19] = { attempts: 2, answered: false, score: 0 };
-}
-function setupQuizSlide(index) {
-  const slide = document.getElementById(`slide-${index + 1}`);
-  if (!slide) return;
-  
-  const optionsContainer = slide.querySelector('.quiz-options');
-  const feedbackEl = slide.querySelector('.quiz-feedback');
-  const attemptsEl = slide.querySelector('.quiz-attempts');
-  const state = quizState[index];
-
-  attemptsEl.textContent = `Attempts remaining: ${state.attempts}`;
-  
-  optionsContainer.addEventListener('click', (event) => {
-    const selectedButton = event.target.closest('.quiz-option');
-    if (selectedButton) handleQuizAnswer(selectedButton, index);
   });
-
-  if (state.answered) {
-    slide.querySelectorAll('.quiz-option').forEach(btn => {
-      btn.disabled = true;
-      if (btn.dataset.correct === 'true') btn.classList.add('correct');
-    });
-    feedbackEl.textContent = "You have already answered this question.";
-  }
 }
-function handleQuizAnswer(selectedButton, index) {
-  const slide = document.getElementById(`slide-${index + 1}`);
-  const state = quizState[index];
 
-  if (state.answered || selectedButton.disabled) return;
+/* ---------- Core ---------- */
+async function showSlide(index) {
+  stopAllAudio();
+  if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
 
-  const feedbackEl = slide.querySelector('.quiz-feedback');
-  const attemptsEl = slide.querySelector('.quiz-attempts');
-  const isCorrect = selectedButton.dataset.correct === 'true';
-  
-  state.attempts--;
-  attemptsEl.textContent = `Attempts remaining: ${state.attempts}`;
+  current = clamp(index, 0, TOTAL - 1);
+  const htmlUrl  = htmlFor(current);
+  const audioUrl = audioFor(current);
 
-  if (isCorrect) {
-    state.score = 1;
-    state.answered = true;
-    selectedButton.classList.add('correct');
-    feedbackEl.textContent = "Correct!";
-    feedbackEl.style.color = 'var(--quiz-success-bg)';
-    sendScormInteraction(index, "correct", selectedButton.textContent.trim());
-    slide.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
-  } else {
-    selectedButton.classList.add('incorrect');
-    selectedButton.disabled = true;
-    if (state.attempts > 0) {
-      feedbackEl.textContent = "Incorrect. Please try again.";
-      feedbackEl.style.color = 'var(--quiz-error-bg)';
+  try {
+    const r = await fetch(`${htmlUrl}?ts=${Date.now()}`, { cache: "no-cache" });
+    if (!r.ok) throw new Error(`HTTP ${r.status} while loading ${htmlUrl}`);
+    const html = await r.text();
+    slideArea.innerHTML = html;
+
+    const root = slideArea.firstElementChild || slideArea;
+    activateRoot(root);
+
+    // Plugins (per-slide special behaviour)
+    runSlidePlugins(current, root);
+
+    // Audio (dataset override -> config -> default)
+    const dsAudio = root?.dataset?.audio;
+    const src = dsAudio || audioUrl;
+    if (audioEl) {
+      audioEl.onended = audioEl.onerror = null;
+      audioEl.src = src; audioEl.load();
+      if (OPT.autoplayAudio) {
+        audioEl.play().then(() => setAudioIcon(true))
+                      .catch(() => ttsFromSlide(root, () => (autoMode ? nextAfterAudioOrTimer() : null)));
+      } else {
+        setAudioIcon(false);
+      }
+      audioEl.onerror = () => ttsFromSlide(root, () => (autoMode ? nextAfterAudioOrTimer() : null));
+      if (OPT.advanceOnAudioEnd) nextAfterAudioOrTimer();
     } else {
-      state.answered = true;
-      feedbackEl.textContent = "Incorrect. The correct answer is highlighted.";
-      feedbackEl.style.color = 'var(--quiz-error-bg)';
-      sendScormInteraction(index, "incorrect", selectedButton.textContent.trim());
-      slide.querySelectorAll('.quiz-option').forEach(btn => {
-        btn.disabled = true;
-        if (btn.dataset.correct === 'true') btn.classList.add('correct');
-      });
+      ttsFromSlide(root, () => (autoMode ? nextAfterAudioOrTimer() : null));
     }
-  }
 
-  const allAnswered = Object.values(quizState).every(s => s.answered);
-  if (allAnswered) updateTotalScormScore();
-}
-function sendScormInteraction(index, result, studentResponse) {
-  try {
-    const interactionIndex = scorm.get("cmi.interactions._count");
-    const questionId = `smiles_quiz_q${index - 17}`;
-    const slide = document.getElementById(`slide-${index + 1}`);
-    const correctButton = slide.querySelector('.quiz-option[data-correct="true"]');
-    const correctResponsePattern = correctButton ? correctButton.textContent.trim() : "";
-    scorm.set(`cmi.interactions.${interactionIndex}.id`, questionId);
-    scorm.set(`cmi.interactions.${interactionIndex}.type`, "choice");
-    scorm.set(`cmi.interactions.${interactionIndex}.result`, result);
-    scorm.set(`cmi.interactions.${interactionIndex}.student_response`, studentResponse);
-    scorm.set(`cmi.interactions.${interactionIndex}.correct_responses.0.pattern`, correctResponsePattern);
-    scorm.set(`cmi.interactions.${interactionIndex}.weighting`, '1');
-    scorm.save();
-  } catch(e) { console.warn("SCORM interaction failed to save:", e); }
-}
-function updateTotalScormScore() {
-  try {
-    const totalScore = Object.values(quizState).reduce((sum, state) => sum + state.score, 0);
-    const maxScore = Object.keys(quizState).length;
-    scorm.set("cmi.core.score.raw", totalScore);
-    scorm.set("cmi.core.score.min", 0);
-    scorm.set("cmi.core.score.max", maxScore);
-    scorm.save();
-  } catch(e) { console.warn("SCORM total score failed to save:", e); }
-}
+    saveProgress();
+    if (current + 1 < TOTAL) preloadAudio(current + 1);
+    updateUI();
 
-// ---------- Event Listeners ----------
-document.addEventListener('DOMContentLoaded', () => {
-    nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
-    prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-    themeToggle.addEventListener('click', () => {
-        document.documentElement.classList.toggle('dark');
-        updateUI();
-    });
-    narrationToggle.addEventListener('click', () => presentationContainer.classList.toggle('narration-visible'));
-    audioToggle.addEventListener('click', playNarrationOnce);
-    autoToggle.addEventListener('click', () => {
-        autoMode = !autoMode;
-        updateAutoButton();
-        if (autoMode) {
-            runAutoFromCurrent();
-        } else {
-            stopAllAudio();
-            autoTimer && clearTimeout(autoTimer);
+    if (autoMode && !OPT.autoplayAudio && !OPT.advanceOnAudioEnd) {
+      autoTimer = setTimeout(() => goNext(), OPT.autoAdvanceDelayMs);
+    }
+
+    if (current === TOTAL - 1) {
+      try {
+        if (typeof scorm !== "undefined" && scorm && scorm.get("cmi.core.lesson_status") !== "completed") {
+          scorm.set("cmi.core.lesson_status", "completed");
+          scorm.save && scorm.save();
         }
-    });
+      } catch (e) {}
+    }
+  } catch (err) {
+    console.error(err);
+    slideArea.innerHTML = `<div class="p-6 text-gray-800 dark:text-gray-200">
+      <h2 class="text-xl font-semibold mb-2">Failed to load slide ${current + 1}</h2>
+      <pre class="text-sm bg-gray-900 text-gray-100 p-3 rounded">${String(err)}</pre>
+    </div>`;
+  }
+}
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' && !nextBtn.disabled) showSlide(currentSlide + 1);
-        if (e.key === 'ArrowLeft' && !prevBtn.disabled) showSlide(currentSlide - 1);
-    });
+/* ---------- Audio/Auto helpers ---------- */
+function nextAfterAudioOrTimer() {
+  if (OPT.advanceOnAudioEnd) {
+    audioEl.onended = () => { setAudioIcon(false); if (autoMode) goNext(); };
+  } else if (autoMode) {
+    autoTimer = setTimeout(() => goNext(), OPT.autoAdvanceDelayMs);
+  }
+}
+function goNext() { if (current < TOTAL - 1) showSlide(current + 1); updateUI(); updateAutoButton(); }
 
-    // ---------- Initial Load ----------
-    initializeQuiz();
-    showSlide(0);
-    preloadAudioForSlide(1);
-});
+/* ---------- Wiring & Boot ---------- */
+function bootTheme() {
+  const html = document.documentElement;
+  const saved = localStorage.getItem(THEME_KEY);
+  const preferDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  html.classList.toggle("dark", saved ? saved === "dark" : preferDark);
+}
+
+function wire() {
+  prevBtn?.addEventListener("click", () => showSlide(current - 1));
+  nextBtn?.addEventListener("click", () => showSlide(current + 1));
+  autoBtn?.addEventListener("click", () => {
+    autoMode = !autoMode; updateAutoButton();
+    if (!autoMode && autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    if (autoMode) nextAfterAudioOrTimer();
+  });
+  audioBtn?.addEventListener("click", () => {
+    if (!audioEl) return;
+    if (audioEl.paused) audioEl.play().then(() => setAudioIcon(true))
+      .catch(() => ttsFromSlide(slideArea.firstElementChild || slideArea));
+    else { audioEl.pause(); setAudioIcon(false); }
+  });
+  narrBtn?.addEventListener("click", () => stage?.classList.toggle("narration-visible"));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" && (!nextBtn || !nextBtn.disabled)) showSlide(current + 1);
+    if (e.key === "ArrowLeft"  && (!prevBtn || !prevBtn.disabled)) showSlide(current - 1);
+  });
+  themeBtn?.addEventListener("click", () => {
+    const html = document.documentElement;
+    const dark = !html.classList.contains("dark");
+    html.classList.toggle("dark", dark);
+    localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
+    updateUI();
+  });
+}
+
+function boot() {
+  bootTheme();
+  wire();
+  current = restoreProgress();
+  updateUI();
+  showSlide(current);
+  preloadAudio(current + 1);
+}
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+else boot();
+
+/* helpers for console */
+window.goto = n => showSlide(n - 1);
+window.reloadCurrent = () => showSlide(current);
