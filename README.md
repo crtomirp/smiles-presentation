@@ -1,7 +1,3 @@
-Got it — here’s a super-short, copy-paste **README.md**.
-
----
-
 # SMILES Presentation
 
 A tiny HTML/JS player for slide-by-slide lessons (with optional audio) that you can also zip as **SCORM 1.2**.
@@ -55,9 +51,7 @@ python -m http.server 8000
 
 ## License & Credits
 
-* Add your preferred license (e.g., MIT).
+* MIT License
 * Maintainer: **Crtomir Podlipnik**.
 
----
 
-If you want, I can also include a one-file `presentation.json` config so you only edit a list of slides instead of touching JS.
